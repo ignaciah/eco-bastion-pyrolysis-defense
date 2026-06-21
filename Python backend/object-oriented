@@ -1,0 +1,75 @@
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Dict, List, Tuple, Optional
+import uuid
+
+class MaterialType(Enum):
+    POLYETHYLENE = "polyethylene"    # High Oil yield
+    VULCANIZED_RUBBER = "rubber"      # High Carbon Black yield
+    COMPOSITE_TOXIN = "composite"    # Mixed state, high degradation resistance
+    SYNGAS_BOOSTER = "booster"       # Pure speed modifier when processed
+
+class NodeClass(Enum):
+    SORTING_JAW = "sorting_jaw"
+    THERMAL_CRACKER = "thermal_cracker"
+    CATALYTIC_RECONSTRUCT = "catalytic_reconstruct"
+
+@dataclass
+class UpgradableAttributes:
+    tier: int
+    processing_radius: float
+    base_throughput: float
+    thermal_dissipation_rate: float
+    conversion_efficiency: float
+    upgrade_cost_oil: float
+
+# Rigid data matrix defining tower scaling profiles
+TOWER_UPGRADE_MATRIX: Dict[NodeClass, Dict[int, UpgradableAttributes]] = {
+    NodeClass.THERMAL_CRACKER: {
+        1: UpgradableAttributes(tier=1, processing_radius=4.5, base_throughput=2.0, thermal_dissipation_rate=0.5, conversion_efficiency=0.70, upgrade_cost_oil=0.0),
+        2: UpgradableAttributes(tier=2, processing_radius=6.0, base_throughput=4.5, thermal_dissipation_rate=0.8, conversion_efficiency=0.80, upgrade_cost_oil=250.0),
+        3: UpgradableAttributes(tier=3, processing_radius=8.0, base_throughput=9.0, thermal_dissipation_rate=1.2, conversion_efficiency=0.92, upgrade_cost_oil=600.0)
+    }
+}
+
+@dataclass
+class ThreatEntityState:
+    entity_id: uuid.UUID
+    material_profile: MaterialType
+    total_mass: float
+    current_integrity: float
+    velocity: float
+    position_coordinate: Tuple[float, float]
+    is_spoiled: bool = False
+
+@dataclass
+class NodeRuntimeInstance:
+    instance_id: uuid.UUID = field(default_factory=uuid.uuid4)
+    node_type: NodeClass = NodeClass.THERMAL_CRACKER
+    current_tier: int = 1
+    current_grid_position: Tuple[int, int] = (0, 0)
+    accumulated_thermal_load: float = 0.0
+    active_target_id: Optional[uuid.UUID] = None
+    total_lifetime_processed: float = 0.0
+
+    def get_specs(self) -> UpgradableAttributes:
+        return TOWER_UPGRADE_MATRIX[self.node_type][self.current_tier]
+
+class GameSessionState:
+    def __init__(self):
+        self.session_id: uuid.UUID = uuid.uuid4()
+        self.tick_counter: int = 0
+        
+        # Currency Balances
+        self.syngas_reserve: float = 100.0
+        self.oil_reserve: float = 300.0
+        self.carbon_black_reserve: float = 0.0
+        
+        # Spatial Map Index
+        self.deployed_nodes: Dict[Tuple[int, int], NodeRuntimeInstance] = {}
+        self.live_threat_stream: List[ThreatEntityState] = []
+        
+        # Environmental Health Metric (0.0 = Failure, 100.0 = Flawless Operational Integrity)
+        self.ecosystem_health: float = 100.0
+
+
