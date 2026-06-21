@@ -1,3 +1,31 @@
+The following architectural diagram illustrates the core interaction between the spatial indexing, resource management, and the state-driven processing logic:
+       ┌──────────────────┐                                  ┌──────────────────┐
+       │  SpatialGridMap  │                                  │  ResourceBank    │
+       │  (Vector3 Index) │                                  │  (S / O / C)     │
+       └────────┬─────────┘                                  └──────────────────┘
+                │
+                ▼
+       ┌──────────────────┐
+       │  ProcessingNode  │ ──(Reads Configuration)──► ┌────────────────────────┐
+       │  (State Machine) │                            │ TowerUpgradeMatrix     │
+       └──────────────────┘                            │ (Tier 1-4 Performance) │
+                                                       └────────────────────────┘
+
+|                                [Node: Cracker Tier 2]                   |
+
+| (o) (o) (o) Range Ring |
+| :--- |
+| :--- | <br> +-------------------------------------------------------------------------+
+| [SYSTEM DETAIL OVERLAY: Thermal Cracker Instance #04] |
+| +------------------------------------+ +------------------------------+ |
+|  | Core Thermal Mass Load |  | Material Output Split |  |
+|  | [██████████████░░░░░░░░░] 52.4°C |  | Oil: 80% | Syngas: 20% |  |
+| +------------------------------------+ +------------------------------+ |
+|  | [Button: Coolant Flush (-30 Syngas)] | [Button: Upgrade Bio-Oil 600] |  |
+| +------------------------------------+ +------------------------------+ | <br> +-------------------------------------------------------------------------+
+| [Build Sorting Jaw] | [*Build Cracker*] | [Build Catalytic Converter] |
+
+
 # Eco-Bastion: Pyrolysis Defense 🚀
 
 A real-time, mobile-first Tower Defense & Strategy simulation game built for the **Meta Horizon Creator Competition**.
